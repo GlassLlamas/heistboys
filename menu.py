@@ -8,6 +8,8 @@ from buffalo.label import Label
 from buffalo.button import Button
 from buffalo.option import Option
 
+import debug
+
 class Menu(Scene):
 
     def on_escape(self):
@@ -25,10 +27,16 @@ class Menu(Scene):
         Button.DEFAULT_BG_COLOR = (100, 100, 100, 255)
         Button.DEFAULT_FONT = "default18"
         Option.DEFAULT_FONT = "default18"
-        self.labels.add(
-            Label(
-                (5, 5),
-                "Heistboys V 1.0",
+        heistboysLabel = Label(
+            (5, 5),
+            "Heistboys V 1.0",
+        )
+        self.labels.add(heistboysLabel)
+        self.buttons.add(
+            Button(
+                (5, heistboysLabel.pos[1] + heistboysLabel.surface.get_size()[1] + 5),
+                "Debug",
+                func=self.goToDebug,
             )
         )
         self.buttons.add(
@@ -40,3 +48,6 @@ class Menu(Scene):
                 func=exit,
             )
         )
+
+    def goToDebug(self):
+        utils.set_scene(debug.Debug())
