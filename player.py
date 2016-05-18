@@ -1,9 +1,15 @@
+import os
+
 import pygame
 
 import animate
 
 class Player(animate.Animate):
-    def __init__(self, pos, spritePath):
+
+    DEFAULT_SPRITE_PATH = os.path.join("sprites", "default_player")
+
+    def __init__(self, pos, spritePath=None):
+        spritePath = spritePath if spritePath is not None else Player.DEFAULT_SPRITE_PATH
         super().__init__(pos, spritePath)
 
     def update(self, keys):

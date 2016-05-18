@@ -31,7 +31,7 @@ class Debug(Scene):
         Scene.__init__(self)
         self.BACKGROUND_COLOR = (0, 0, 0, 255)
         self.level = levels.load("basic.lvl")
-        self.player = player.Player((0,0), os.path.join("sprites", "default_player"))
+        self.player = player.Player(self.level.startPosition)
         self.camera = camera.Camera(locked=self.player)
 
     def goToDebug(self):

@@ -39,7 +39,7 @@ class Animate(entity.Entity):
         elif self.movingDown:
             self.spriteKey = "down"
             self.yv = new_v
-        elif self.movingLeft:
+        if self.movingLeft:
             self.spriteKey = "left"
             self.xv = -new_v
         elif self.movingRight:
