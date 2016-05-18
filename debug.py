@@ -1,3 +1,4 @@
+import os
 import sys
 
 import pygame
@@ -8,20 +9,30 @@ from buffalo.label import Label
 from buffalo.button import Button
 from buffalo.option import Option
 
+import camera
+import levels
+import player
+
 class Debug(Scene):
 
     def on_escape(self):
         sys.exit()
 
     def update(self):
-        pass
+        keys = pygame.key.get_pressed()
+        self.player.update(keys)
+        self.camera.update()
 
     def blit(self):
-        pass
+        self.level.blit(utils.screen, self.camera.pos)
+        self.player.blit(utils.screen, self.camera.pos)
 
     def __init__(self):
         Scene.__init__(self)
         self.BACKGROUND_COLOR = (0, 0, 0, 255)
+        self.level = levels.load("basic.lvl")
+        self.player = player.Player((0,0), os.path.join("sprites", "default_player"))
+        self.camera = camera.Camera(locked=self.player)
 
     def goToDebug(self):
         utils.set_scene(debug.Debug())
