@@ -54,7 +54,7 @@ class Animate(entity.Entity):
 
         pred_fpos = x + self.xv, y + self.yv
         pred_pos  = int(pred_fpos[0]), int(pred_fpos[1])
-        pred_rect = pygame.Rect(pred_pos, tuple(map(lambda n: n - 5, self.size)))
+        pred_rect = pygame.Rect(pred_pos, self.size)
 
         if not any(map(lambda w: pygame.Rect(w).colliderect(pred_rect), level.walls)):
             self.fpos = pred_fpos
