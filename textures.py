@@ -2,6 +2,8 @@ import os
 
 import pygame
 
+from buffalo import utils
+
 textures = dict()
 
 def loadSprites(spritePath):
@@ -29,3 +31,9 @@ def loadItemSprites(spritePath):
                 textures[fullpath] = pygame.image.load(fullpath)
             itemSprites[bool(relpath)].append(textures[fullpath])
     return itemSprites
+
+def getSprite(spritePath):
+    if spritePath in textures:
+        return textures[spritePath]
+    textures[spritePath] = pygame.image.load(spritePath)
+    return textures[spritePath]

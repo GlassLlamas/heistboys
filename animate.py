@@ -53,22 +53,23 @@ class Animate(entity.Entity):
         self.render()
 
         # Predict the x and y components separately
-        OVERLAP_Y = 20
+        OVERLAP_Y = 25
         pred_fpos = x + self.xv, y
         pred_pos  = int(pred_fpos[0]), int(pred_fpos[1])
         pred_rect = pygame.Rect((pred_pos[0], pred_pos[1] + OVERLAP_Y),
                                 (self.size[0], self.size[1] - OVERLAP_Y))
-
-        if not any(map(lambda w: pygame.Rect(w).colliderect(pred_rect), level.walls)):
-            self.fpos = pred_fpos
-            self.pos = int(self.fpos[0]), int(self.fpos[1])
+        self.moveOrCollide(pred_fpos, pred_pos, pred_rect, level)
 
         pred_fpos = self.fpos[0], y + self.yv
         pred_pos  = int(pred_fpos[0]), int(pred_fpos[1])
         pred_rect = pygame.Rect((pred_pos[0], pred_pos[1] + OVERLAP_Y),
                                 (self.size[0], self.size[1] - OVERLAP_Y))
+        self.moveOrCollide(pred_fpos, pred_pos, pred_rect, level)
+        ##############################################
 
-        if not any(map(lambda w: pygame.Rect(w).colliderect(pred_rect), level.walls)):
+    def moveOrCollide(self, pred_fpos, pred_pos, pred_rect, level):
+        if not any(map(lambda w: pygame.Rect(w).colliderect(pred_rect), level.walls)) and \
+           not any(map(lambda dO: dO[1].colliderect(pred_rect), level.destructibleObjects)) and \
+           not any(map(lambda bO: bO[1].colliderect(pred_rect), level.blockingObjects)):
             self.fpos = pred_fpos
             self.pos = int(self.fpos[0]), int(self.fpos[1])
-        ##############################################

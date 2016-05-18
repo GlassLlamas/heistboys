@@ -4,6 +4,8 @@ import pygame
 
 from buffalo import utils
 
+import textures
+
 BASE_PATH = os.path.join("levels")
 
 class Level:
@@ -20,14 +22,16 @@ class Level:
     DEFAULT_WALL_G = 50
     DEFAULT_WALL_B = 50
     DEFAULT_WALL_A = 255
-    DEFAULT_WALLS = []
 
     def __init__(self,
                  width=None, height=None,
                  startX=None, startY=None, # startPosition
                  r=None, g=None, b=None, a=None,
                  wall_r=None, wall_g=None, wall_b=None, wall_a=None,
-                 walls=None,
+                 walls=[],
+                 destructibleObjects=[],
+                 blockingObjects=[],
+                 nonblockingObjects=[],
              ):
         self.width = width if width is not None else Level.DEFAULT_WIDTH
         self.height = height if height is not None else Level.DEFAULT_HEIGHT
@@ -41,11 +45,14 @@ class Level:
         self.wall_g = wall_g if wall_g is not None else Level.DEFAULT_WALL_G
         self.wall_b = wall_b if wall_b is not None else Level.DEFAULT_WALL_B
         self.wall_a = wall_a if wall_a is not None else Level.DEFAULT_WALL_A
-        self.walls = walls if walls is not None else Level.DEFAULT_WALLS
+        self.walls = walls
         self.walls.append((-10, -10, self.width, 10))
         self.walls.append((-10, -10, 10, self.height))
         self.walls.append((self.width, -10, 10, self.height + 20))
         self.walls.append((-10, self.height, self.width + 20, 10))
+        self.destructibleObjects = destructibleObjects
+        self.blockingObjects = blockingObjects
+        self.nonblockingObjects = nonblockingObjects
         self.render()
 
     def blit(self, dest, offset=(0,0)):
@@ -55,8 +62,14 @@ class Level:
         if not hasattr(self, "surface"):
             self.surface = utils.empty_surface(self.size)
         self.surface.fill(self.color)
+        for (pos, surface) in self.nonblockingObjects:
+            self.surface.blit(surface, pos)
         for wall in self.walls:
             self.surface.fill(self.wallColor, pygame.Rect(wall))
+        for (pos, rect, surface, drops) in self.destructibleObjects:
+            self.surface.blit(surface, pos)
+        for (pos, rect, surface) in self.blockingObjects:
+            self.surface.blit(surface, pos)
 
     @property
     def size(self):
@@ -96,35 +109,26 @@ def load(filename):
     startX, startY = None, None
     r, g, b, a = None, None, None, None
     walls = []
+    destructibleObjects = []
+    blockingObjects = []
+    nonblockingObjects = []
     with open(path, "r") as levelFile:
-        def parseError(lineno):
-            print("Could not parse line {}".format(lineno))
+        def parseError(lineno, e):
+            print("Could not parse line {} of {} => in levels.py: {}".format(lineno, path, e))
         for lineno, line in [(k + 1, v.strip()) for k, v in enumerate(levelFile)]:
-            if line.startswith("width:"):
-                _, widthString = line.split()
-                try:
+            try:
+                if line.startswith("width:"):
+                    _, widthString = line.split()
                     width = int(widthString)
-                except ValueError:
-                    parseError(lineno)
-            elif line.startswith("height:"):
-                _, heightString = line.split()
-                try:
+                elif line.startswith("height:"):
+                    _, heightString = line.split()
                     height = int(heightString)
-                except ValueError:
-                    parseError(lineno)
-            elif line.startswith("startPosition:"):
-                _, startXString, startYString = line.split()
-                try:
+                elif line.startswith("startPosition:"):
+                    _, startXString, startYString = line.split()
                     startX = int(startXString)
-                except ValueError:
-                    parseError(lineno)
-                try:
                     startY = int(startYString)
-                except ValueError:
-                    parseError(lineno)
-            elif line.startswith("color:"):
-                _, rString, gString, bString, aString = line.split()
-                try:
+                elif line.startswith("color:"):
+                    _, rString, gString, bString, aString = line.split()
                     r = int(rString)
                     g = int(gString)
                     b = int(bString)
@@ -137,11 +141,8 @@ def load(filename):
                         raise ValueError
                     if a < 0 or a > 255:
                         raise ValueError
-                except ValueError:
-                    parseError(lineno)
-            elif line.startswith("wallColor:"):
-                _, rString, gString, bString, aString = line.split()
-                try:
+                elif line.startswith("wallColor:"):
+                    _, rString, gString, bString, aString = line.split()
                     wall_r = int(rString)
                     wall_g = int(gString)
                     wall_b = int(bString)
@@ -154,20 +155,60 @@ def load(filename):
                         raise ValueError
                     if wall_a < 0 or wall_a > 255:
                         raise ValueError
-                except ValueError:
-                    parseError(lineno)
-            elif line.startswith("wall:"):
-                _, xs, ys, ws, hs = line.split()
-                try:
+                elif line.startswith("wall:"):
+                    _, xs, ys, ws, hs = line.split()
                     x = int(xs)
                     y = int(ys)
                     w = int(ws)
                     h = int(hs)
-                except ValueError:
-                    parseError(lineno)
-                walls.append((x, y, w, h))
+                    walls.append((x, y, w, h))
+                elif line.startswith("destructibleObject:"):
+                    elems = line.split()
+                    filename, xs, ys = elems[1:4]
+                    x = int(xs)
+                    y = int(ys)
+                    drops = []
+                    if len(elems) > 4:
+                        if len(elems[4:]) % 2 == 1:
+                            raise ValueError
+                        drops = [(itemName, float(chance)) for itemName, chance in zip(elems[4::2], elems[5::2])]
+                    sprite = textures.getSprite(os.path.join("sprites","misc","destructible", filename))
+                    OVERLAP_Y = 0
+                    sprite_size = sprite.get_size()
+                    destructibleObjects.append((
+                        (x, y),
+                        pygame.Rect((x, y + OVERLAP_Y), (sprite_size[0], sprite_size[1] - OVERLAP_Y)),
+                        sprite,
+                        drops
+                    ))
+                elif line.startswith("blockingObject:"):
+                    _, filename, xs, ys = line.split()
+                    x = int(xs)
+                    y = int(ys)
+                    sprite = textures.getSprite(os.path.join("sprites","misc","blocking", filename))
+                    OVERLAP_Y = 0
+                    sprite_size = sprite.get_size()
+                    blockingObjects.append((
+                        (x, y),
+                        pygame.Rect((x, y + OVERLAP_Y), (sprite_size[0], sprite_size[1] - OVERLAP_Y)),
+                        sprite
+                    ))
+                elif line.startswith("nonblockingObject:"):
+                    _, filename, xs, ys = line.split()
+                    x = int(xs)
+                    y = int(ys)
+                    nonblockingObjects.append((
+                        (x, y),
+                        textures.getSprite(os.path.join("sprites","misc","nonblocking", filename))
+                    ))
+            except Exception as e:
+                    parseError(lineno, e)
     return Level(width, height,
                  startX, startY,
                  r, g, b, a,
                  wall_r, wall_g, wall_b, wall_a,
-                 walls)
+                 walls,
+                 destructibleObjects,
+                 blockingObjects,
+                 nonblockingObjects,
+    )

@@ -1,9 +1,14 @@
 width: 750
 height: 750
+
+// startPosition <x> <y>
 startPosition: 675 675
+
+// color/wallColor: <r> <g> <b> <a>
 color: 60 60 60 255
 wallColor: 0 0 35 255
 
+// wall: <x> <y> <w> <h>
 wall: 600 350 10 500
 wall: 650 550 100 10
 wall: 650 600 10 150
@@ -23,3 +28,27 @@ wall: 50 525 250 10
 wall: 350 525 200 10
 wall: 50 575 250 10
 wall: 350 575 200 10
+
+// destructibleObject: <filename> <x> <y> [<itemname> <dropchance:(0.0 - 1.0]> ...]
+destructibleObject: crate.png 675 30   item1 0.9 item2 0.6
+destructibleObject: crate.png 675 105  item1 0.9 item2 0.6
+destructibleObject: crate.png 675 180  item1 0.9 item2 0.6
+destructibleObject: crate.png 600 30   item1 0.9 item2 0.6
+destructibleObject: crate.png 600 105  item1 0.9 item2 0.6
+destructibleObject: crate.png 600 180  item1 0.9 item2 0.6
+destructibleObject: barrel.png 475 30  item1 0.9 item2 0.6
+destructibleObject: barrel.png 475 105 item1 0.9 item2 0.6
+destructibleObject: barrel.png 475 180 item1 0.9 item2 0.6
+destructibleObject: barrel.png 400 30  item1 0.9 item2 0.6
+destructibleObject: barrel.png 400 105 item1 0.9 item2 0.6
+destructibleObject: barrel.png 400 180 item1 0.9 item2 0.6
+
+// blockingObject: <filename> <x> <y>
+blockingObject: table.png 665 365
+blockingObject: table.png 100 625
+blockingObject: table.png 185 625
+blockingObject: table.png 100 685
+blockingObject: table.png 185 685
+
+// nonblockingObject: <filename> <x> <y>
+nonblockingObject: horizontal_rug.png 400 635

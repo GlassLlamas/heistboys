@@ -6,7 +6,7 @@ import animate
 
 class Player(animate.Animate):
 
-    DEFAULT_SPRITE_PATH = os.path.join("sprites", "default_player")
+    DEFAULT_SPRITE_PATH = os.path.join("sprites", "animate", "default_player")
 
     def __init__(self, pos, spritePath=None):
         spritePath = spritePath if spritePath is not None else Player.DEFAULT_SPRITE_PATH
