@@ -52,10 +52,23 @@ class Animate(entity.Entity):
         self.ticks = new_ticks % self.ticksPerSprite
         self.render()
 
-        pred_fpos = x + self.xv, y + self.yv
+        # Predict the x and y components separately
+        OVERLAP_Y = 20
+        pred_fpos = x + self.xv, y
         pred_pos  = int(pred_fpos[0]), int(pred_fpos[1])
-        pred_rect = pygame.Rect(pred_pos, self.size)
+        pred_rect = pygame.Rect((pred_pos[0], pred_pos[1] + OVERLAP_Y),
+                                (self.size[0], self.size[1] - OVERLAP_Y))
 
         if not any(map(lambda w: pygame.Rect(w).colliderect(pred_rect), level.walls)):
             self.fpos = pred_fpos
             self.pos = int(self.fpos[0]), int(self.fpos[1])
+
+        pred_fpos = self.fpos[0], y + self.yv
+        pred_pos  = int(pred_fpos[0]), int(pred_fpos[1])
+        pred_rect = pygame.Rect((pred_pos[0], pred_pos[1] + OVERLAP_Y),
+                                (self.size[0], self.size[1] - OVERLAP_Y))
+
+        if not any(map(lambda w: pygame.Rect(w).colliderect(pred_rect), level.walls)):
+            self.fpos = pred_fpos
+            self.pos = int(self.fpos[0]), int(self.fpos[1])
+        ##############################################
