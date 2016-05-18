@@ -1,0 +1,2 @@
+pygame>=1.9.2
+-e git+https://github.com/gragas/buffalo#egg=buffalo
