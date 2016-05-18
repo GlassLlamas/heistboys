@@ -1,8 +1,8 @@
 width: 750
 height: 750
 startPosition: 675 675
-color: 255 0 0 255
-wallColor: 0 0 150 255
+color: 60 60 60 255
+wallColor: 0 0 75 255
 
-wall: 600 550 20 200
-wall: 665 550 85 20
+wall: 600 550 10 200
+wall: 665 550 85 10
