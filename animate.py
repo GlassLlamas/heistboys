@@ -28,7 +28,7 @@ class Animate(entity.Entity):
         self.surface = self.sprites[self.spriteKey][self.spriteNum]
         self.size = self.surface.get_size()
 
-    def update(self):
+    def update(self, level):
         x, y = self.fpos
         self.xv, self.yv = 0.0, 0.0
         new_v = self.speed * utils.delta
@@ -52,5 +52,10 @@ class Animate(entity.Entity):
         self.ticks = new_ticks % self.ticksPerSprite
         self.render()
 
-        self.fpos = (x + self.xv, y + self.yv)
-        self.pos = int(self.fpos[0]), int(self.fpos[1])
+        pred_fpos = x + self.xv, y + self.yv
+        pred_pos  = int(pred_fpos[0]), int(pred_fpos[1])
+        pred_rect = pygame.Rect(pred_pos, tuple(map(lambda n: n - 5, self.size)))
+
+        if not any(map(lambda w: pygame.Rect(w).colliderect(pred_rect), level.walls)):
+            self.fpos = pred_fpos
+            self.pos = int(self.fpos[0]), int(self.fpos[1])

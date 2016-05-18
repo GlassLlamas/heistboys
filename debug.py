@@ -20,7 +20,7 @@ class Debug(Scene):
 
     def update(self):
         keys = pygame.key.get_pressed()
-        self.player.update(keys)
+        self.player.update(keys, self.level)
         self.camera.update()
 
     def blit(self):

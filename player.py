@@ -12,7 +12,7 @@ class Player(animate.Animate):
         spritePath = spritePath if spritePath is not None else Player.DEFAULT_SPRITE_PATH
         super().__init__(pos, spritePath)
 
-    def update(self, keys):
+    def update(self, keys, level):
         self.movingUp, self.movingLeft, self.movingDown, self.movingRight, shift = (
             keys[pygame.K_w],
             keys[pygame.K_a],
@@ -20,4 +20,4 @@ class Player(animate.Animate):
             keys[pygame.K_d],
             keys[pygame.K_LSHIFT],
         )
-        super().update()
+        super().update(level)
