@@ -32,10 +32,10 @@ class Debug(Scene):
             a.blit(utils.screen, self.camera.pos)
         self.player.blit(utils.screen, self.camera.pos)
 
-    def __init__(self):
+    def __init__(self, levelName="basic.lvl"):
         Scene.__init__(self)
         self.BACKGROUND_COLOR = (0, 0, 0, 255)
-        self.level = levels.load("basic.lvl")
+        self.level = levels.load(levelName)
         self.player = player.Player(self.level.startPosition)
         self.camera = camera.Camera(locked=self.player)
         self.animates = []

@@ -7,6 +7,7 @@ from buffalo.scene import Scene
 from buffalo.label import Label
 from buffalo.button import Button
 from buffalo.option import Option
+from buffalo.input import Input
 
 import debug
 
@@ -28,17 +29,21 @@ class Menu(Scene):
         Button.DEFAULT_FONT = "default18"
         Option.DEFAULT_FONT = "default18"
         heistboysLabel = Label(
-            (5, 5),
+            (10, 10),
             "Heistboys V 1.0",
         )
         self.labels.add(heistboysLabel)
-        self.buttons.add(
-            Button(
-                (5, heistboysLabel.pos[1] + heistboysLabel.surface.get_size()[1] + 5),
-                "Debug",
-                func=self.goToDebug,
-            )
+        debugButton = Button(
+            (10, heistboysLabel.pos[1] + heistboysLabel.surface.get_size()[1] + 10),
+            "Debug",
+            func=self.goToDebug,
         )
+        self.buttons.add(debugButton)
+        self.debugInput = Input(
+            (10, debugButton.pos[1] + debugButton.size[1] + 10),
+            "basic"
+        )
+        self.inputs.add(self.debugInput)
         self.buttons.add(
             Button(
                 (utils.SCREEN_W / 2, utils.SCREEN_H - 50),
@@ -50,4 +55,7 @@ class Menu(Scene):
         )
 
     def goToDebug(self):
-        utils.set_scene(debug.Debug())
+        levelName = self.debugInput.label.text
+        if levelName.endswith("|"):
+            levelName = levelName[:-1]
+        utils.set_scene(debug.Debug(levelName))
