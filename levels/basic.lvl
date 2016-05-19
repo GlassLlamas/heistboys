@@ -1,47 +1,27 @@
-width: 750
-height: 750
-
 // startPosition <x> <y>
-startPosition: 675 675
+startPosition: 480 480
 
-// color/wallColor: <r> <g> <b> <a>
-color: 60 60 60 255
-wallColor: 0 0 35 255
+// backgroundImage: <filename>
+backgroundImage: todd_test.png
 
 // wall: <x> <y> <w> <h>
-wall: 600 350 10 500
-wall: 650 550 100 10
-wall: 650 600 10 150
-wall: 650 350 10 150
-wall: 650 350 100 10
-wall: 50 350 550 10
-wall: 50 300 700 10
-wall: 300 0 10 260
-wall: 0 250 250 10
-wall: 300 250 250 10
-wall: 600 250 150 10
-wall: 50 350 10 175
-wall: 50 575 10 175
-wall: 350 350 10 175
-wall: 350 575 10 175
-wall: 50 525 250 10
-wall: 350 525 200 10
-wall: 50 575 250 10
-wall: 350 575 200 10
+wall: 0 60 1020 10
+wall: 0 1030 1020 10
+wall: 15 0 10 1030
+wall: 985 0 10 1030
 
 // destructibleObject: <filename> <x> <y> [<itemname> <dropchance:(0.0 - 1.0]> ...]
-destructibleObject: crate.png 675 30   item1 0.9 item2 0.6
-destructibleObject: crate.png 675 105  item1 0.9 item2 0.6
-destructibleObject: crate.png 675 180  item1 0.9 item2 0.6
-destructibleObject: crate.png 600 30   item1 0.9 item2 0.6
-destructibleObject: crate.png 600 105  item1 0.9 item2 0.6
-destructibleObject: crate.png 600 180  item1 0.9 item2 0.6
-destructibleObject: barrel.png 475 30  item1 0.9 item2 0.6
-destructibleObject: barrel.png 475 105 item1 0.9 item2 0.6
-destructibleObject: barrel.png 475 180 item1 0.9 item2 0.6
-destructibleObject: barrel.png 400 30  item1 0.9 item2 0.6
-destructibleObject: barrel.png 400 105 item1 0.9 item2 0.6
-destructibleObject: barrel.png 400 180 item1 0.9 item2 0.6
+destructibleObject: crate.png 675 330   item1 0.9 item2 0.6
+destructibleObject: crate.png 675 405  item1 0.9 item2 0.6
+destructibleObject: crate.png 675 480  item1 0.9 item2 0.6
+destructibleObject: crate.png 600 330   item1 0.9 item2 0.6
+destructibleObject: crate.png 600 405  item1 0.9 item2 0.6
+destructibleObject: crate.png 600 480  item1 0.9 item2 0.6
+destructibleObject: barrel.png 475 330  item1 0.9 item2 0.6
+destructibleObject: barrel.png 475 405 item1 0.9 item2 0.6
+destructibleObject: barrel.png 400 330  item1 0.9 item2 0.6
+destructibleObject: barrel.png 400 405 item1 0.9 item2 0.6
+destructibleObject: barrel.png 400 480 item1 0.9 item2 0.6
 
 // blockingObject: <filename> <x> <y>
 blockingObject: table.png 665 365

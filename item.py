@@ -1,5 +1,6 @@
 import random
 
+import entity
 import textures
 
 class Item(entity.Entity):
@@ -15,7 +16,7 @@ class Item(entity.Entity):
         super().__init__(self.pos)
         self.render()
         self.velocityGenerators = []
-
+    
     def render(self):
         if self.inUse:
             self.surface = self.sprites[self.inUse][self.spriteNum]
@@ -53,4 +54,4 @@ class Item(entity.Entity):
             if not any(map(lambda w: pygame.Rect(w).colliderect(pred_rect), level.walls)):
                 self.fpos = pred_fpos
                 self.pos = int(self.fpos[0]), int(self.fpos[1])
-            ##############################################        
+            ##############################################
