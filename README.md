@@ -31,7 +31,7 @@ pip install -r requirements.txt
 ### Quick Start didn't work because of Buffalo
 
 1. `git clone https://github.com/gragas/buffalo`
-2. (probably sudo) `python setup.py install`
+2. (probably sudo) `python setup.py develop`
 
 ## Running the progrum
 

@@ -10,7 +10,7 @@ class Animate(entity.Entity):
                  pos,
                  spritePath,
                  speed=0.15,
-                 runningSpeedMult=2.0,
+                 runningSpeedMult=1.75,
                  ticksPerSprite=250,
     ):
         self.pos = pos
