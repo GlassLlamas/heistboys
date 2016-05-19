@@ -1,2 +1,2 @@
-pygame>=1.9.2
+-e hg+https://bitbucket.org/pygame/pygame#egg=pygame
 -e git+https://github.com/gragas/buffalo#egg=buffalo
