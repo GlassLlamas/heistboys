@@ -13,7 +13,7 @@ class Player(animate.Animate):
         super().__init__(pos, spritePath)
 
     def update(self, keys, level):
-        self.movingUp, self.movingLeft, self.movingDown, self.movingRight, shift = (
+        self.movingUp, self.movingLeft, self.movingDown, self.movingRight, self.running = (
             keys[pygame.K_w],
             keys[pygame.K_a],
             keys[pygame.K_s],
