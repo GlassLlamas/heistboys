@@ -11,7 +11,7 @@
 ### Quick Start
 
 ```
-pip install -U requirements.txt
+pip install -r requirements.txt
 ```
 
 ^^^this should work
