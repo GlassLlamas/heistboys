@@ -173,7 +173,7 @@ def load(filename):
                             raise ValueError
                         drops = [(itemName, float(chance)) for itemName, chance in zip(elems[4::2], elems[5::2])]
                     sprite = textures.getSprite(os.path.join("sprites","misc","destructible", filename))
-                    OVERLAP_Y = 0
+                    OVERLAP_Y = 15
                     sprite_size = sprite.get_size()
                     destructibleObjects.append((
                         (x, y),
@@ -186,7 +186,7 @@ def load(filename):
                     x = int(xs)
                     y = int(ys)
                     sprite = textures.getSprite(os.path.join("sprites","misc","blocking", filename))
-                    OVERLAP_Y = 0
+                    OVERLAP_Y = 15
                     sprite_size = sprite.get_size()
                     blockingObjects.append((
                         (x, y),

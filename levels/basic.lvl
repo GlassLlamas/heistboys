@@ -51,4 +51,4 @@ blockingObject: table.png 100 685
 blockingObject: table.png 185 685
 
 // nonblockingObject: <filename> <x> <y>
-nonblockingObject: horizontal_rug.png 400 635
+nonblockingObject: horizontal_rug.png 365 635
