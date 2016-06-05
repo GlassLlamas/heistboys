@@ -14,7 +14,7 @@ class Animate(entity.Entity):
                  ticksPerSprite=250,
     ):
         self.pos = pos
-        self.sprites = textures.loadSprites(spritePath)
+        self.sprites = textures.loadAnimateSprites(spritePath)
         self.spriteKey = "down"
         self.spriteNum = 0
         self.ticks = 0

@@ -12,7 +12,7 @@ class Level:
 
     def __init__(self,
                  backgroundImage=None,
-                 startX=100, startY=100,
+                 startX=None, startY=None,
                  walls=[],
                  destructibleObjects=[],
                  blockingObjects=[],
