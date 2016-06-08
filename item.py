@@ -6,10 +6,22 @@ import textures
 
 class Item(entity.Entity):
     
-    def __init__(self, pos, inInventory=False):
+    ID = 0
+    Hash = dict() # itemName -> ID
+    
+    def getID(itemName):
+        if itemName in Item.Hash:
+            return Item.Hash[itemName]
+        Item.ID += 1
+        Item.Hash[itemName] = Item.ID
+        return Item.ID
+
+    def __init__(self, pos, itemName, inInventory=False):
         super().__init__(pos)
+        self.itemName = itemName
         self.inInventory = inInventory
         self.velocityGenerators = []
+        self.ID = Item.GetID()
     
     @property
     def inInventory(self):
@@ -136,3 +148,8 @@ class Apparel(Equippable):
                  apparelPositions=[]):
         super().__init__(pos, spritePath, ticksPerSprite, equipped, effects)
         self.apparelPositions = apparelPositions
+
+class ItemStack:
+    def __init__(self, item, quantity):
+        self.item = item
+        self.quantity = quantity
