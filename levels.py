@@ -1,9 +1,12 @@
+import copy
 import os
+import random
 
 import pygame
 
 from buffalo import utils
 
+import item
 import textures
 
 BASE_PATH = os.path.join("levels")
@@ -28,21 +31,33 @@ class Level:
         self.destructibleObjects = destructibleObjects
         self.blockingObjects = blockingObjects
         self.nonblockingObjects = nonblockingObjects
+        self.animates = []
+        self.items = []
         self.render()
 
     def blit(self, dest, offset=(0,0)):
         dest.blit(self.surface, (-offset[0], -offset[1]))
+        for a in self.animates:
+            a.blit(utils.screen, offset)
+        for i in self.items:
+            i.blit(utils.screen, offset)
 
     def render(self):
         if not hasattr(self, "surface"):
             self.surface = utils.empty_surface(self.backgroundImage.get_size())
-            self.surface.blit(self.backgroundImage, (0, 0))
+        self.surface.blit(self.backgroundImage, (0, 0))
         for (pos, surface) in self.nonblockingObjects:
             self.surface.blit(surface, pos)
         for (pos, rect, surface, drops) in self.destructibleObjects:
             self.surface.blit(surface, pos)
         for (pos, rect, surface) in self.blockingObjects:
             self.surface.blit(surface, pos)
+
+    def update(self, cameraPos):
+        for a in self.animates:
+            a.update(self)   
+        for i in self.items:
+            i.blit(utils.screen, cameraPos)
 
     @property
     def startPosition(self):
@@ -51,6 +66,17 @@ class Level:
     @startPosition.setter
     def startPosition(self, value):
         self.startX, self.startY = value
+
+    def destroyDestructibleObject(self, indx):
+        dO = self.destructibleObjects.pop(indx)
+        for drop in dO[3]:
+            itemName, chance = drop
+            if random.random() <= chance:
+                dropped = copy.copy(item.Item.items[itemName])
+                dropped.pos = tuple(map(float, dO[0]))
+                dropped.randomizeSurface()
+                self.items.append(dropped)
+        self.render() # This is slow af
 
 def load(filename):
     path = os.path.join(BASE_PATH, filename)
@@ -88,7 +114,8 @@ def load(filename):
                     if len(elems) > 4:
                         if len(elems[4:]) % 2 == 1:
                             raise ValueError
-                        drops = [(itemName, float(chance)) for itemName, chance in zip(elems[4::2], elems[5::2])]
+                        zipped = zip(elems[4::2], elems[5::2])
+                        drops = [(itemName.replace("_", " "), float(chance)) for itemName, chance in zipped]
                     sprite = textures.getSprite(os.path.join("sprites","misc","destructible", filename))
                     OVERLAP_Y = 0
                     sprite_size = sprite.get_size()

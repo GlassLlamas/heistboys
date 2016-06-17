@@ -11,17 +11,19 @@ wall: 15 0 10 1030
 wall: 985 0 10 1030
 
 // destructibleObject: <filename> <x> <y> [<itemname> <dropchance:(0.0 - 1.0]> ...]
-destructibleObject: crate.png 675 330   item1 0.9 item2 0.6
-destructibleObject: crate.png 675 405  item1 0.9 item2 0.6
-destructibleObject: crate.png 675 480  item1 0.9 item2 0.6
-destructibleObject: crate.png 600 330   item1 0.9 item2 0.6
-destructibleObject: crate.png 600 405  item1 0.9 item2 0.6
-destructibleObject: crate.png 600 480  item1 0.9 item2 0.6
-destructibleObject: barrel.png 475 330  item1 0.9 item2 0.6
-destructibleObject: barrel.png 475 405 item1 0.9 item2 0.6
-destructibleObject: barrel.png 400 330  item1 0.9 item2 0.6
-destructibleObject: barrel.png 400 405 item1 0.9 item2 0.6
-destructibleObject: barrel.png 400 480 item1 0.9 item2 0.6
+// in <itemname>, underscores will be replaced with spaces
+// <itemname> must not contain spaces
+destructibleObject: crate.png 675 330  Metal_Scraps 0.75
+destructibleObject: crate.png 675 405  Metal_Scraps 0.75
+destructibleObject: crate.png 675 480  Metal_Scraps 0.75
+destructibleObject: crate.png 600 330  Metal_Scraps 0.75
+destructibleObject: crate.png 600 405  Metal_Scraps 0.75
+destructibleObject: crate.png 600 480  Metal_Scraps 0.75
+destructibleObject: barrel.png 475 330 Metal_Scraps 0.75
+destructibleObject: barrel.png 475 405 Metal_Scraps 0.75
+destructibleObject: barrel.png 400 330 Metal_Scraps 0.75
+destructibleObject: barrel.png 400 405 Metal_Scraps 0.75
+destructibleObject: barrel.png 400 480 Metal_Scraps 0.75
 
 // blockingObject: <filename> <x> <y>
 blockingObject: table.png 665 365

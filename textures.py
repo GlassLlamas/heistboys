@@ -6,6 +6,7 @@ from buffalo import utils
 
 textures = dict()
 
+# TODO: Abstract this spaghetti code
 def loadAnimateSprites(spritePath):
     directions = {"up":[], "down":[], "left":[], "right":[]}
     for direction in directions:

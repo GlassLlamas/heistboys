@@ -23,14 +23,11 @@ class Debug(Scene):
     def update(self):
         keys = pygame.key.get_pressed()
         self.player.update(keys, self.level)
-        for a in self.animates:
-            a.update(self.level)
         self.camera.update()
+        self.level.update(self.camera.pos)
 
     def blit(self):
         self.level.blit(utils.screen, self.camera.pos)
-        for a in self.animates:
-            a.blit(utils.screen, self.camera.pos)
         self.player.blit(utils.screen, self.camera.pos)
 
     def __init__(self, levelName="basic.lvl"):
@@ -40,7 +37,6 @@ class Debug(Scene):
         self.level = levels.load(levelName)
         self.player = player.Player(self.level.startPosition)
         self.camera = camera.Camera(locked=self.player)
-        self.animates = []
 
     def goToDebug(self):
         utils.set_scene(debug.Debug())

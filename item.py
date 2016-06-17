@@ -7,6 +7,7 @@ import textures
 
 class Item(entity.Entity):
 
+    items = dict()
     unusableItems = []
     consumableItems = []
     apparel = []
@@ -89,8 +90,11 @@ class UnusableItem(Item):
         super().__init__(pos, itemName)
         self.sprites = textures.loadUnusableItemSprites(spritePath)
         self.inUse = False
-        self.surface = random.choice(self.sprites[self.inUse])
+        self.randomizeSurface()
         self.size = self.surface.get_size()
+
+    def randomizeSurface(self):
+        self.surface = random.choice(self.sprites)
 
 class ConsumableItem(UsableItem):
     def __init__(self, pos, itemName, spritePath, ticksPerSprite=250, effects=[]):
@@ -149,46 +153,61 @@ class ItemStack:
         self.quantity = quantity
 
 def loadItems():
-    Item.unusableItems = loadUnusableItems()
-    Item.consumableItems = loadConsumableItems()
+    loadArbitraryItems(
+        getUnusableItem,
+        "unusableItems",
+        os.path.join("items", "unusable_items")
+    )
+    loadArbitraryItems(
+        getConsumableItem,
+        "consumableItems",
+        os.path.join("items", "usable_items", "consumable_items")
+    )
+    loadArbitraryItems(
+        getApparel,
+        "apparel",
+        os.path.join("items", "usable_items", "equippable_items", "apparel")
+    )
     # TODO: Implement melee, ranged weapons
-    #loadMeleeWeapons()
-    #loadRangedWeapons()
-    Item.apparel = loadApparel()
 
+def loadArbitraryItems(constructor, itemAttrName, basePath):
+    items = []
+    for dir in [f for f in os.listdir(basePath) if os.path.isdir(os.path.join(basePath, f))]:
+        item = constructor(os.path.join(basePath, dir))
+        if item is not None:
+            items.append(item)
+    setattr(Item, itemAttrName, items)
+    for items in items:
+        Item.items[item.itemName] = item    
+
+# TODO: Abstract this spaghetti code
 def getUnusableItem(dirPath):
     itemFilePath = os.path.join(dirPath, "item_file")
-    if os.path.exists(itemFilePath) and os.path.isdir(itemFilePath):
+    if os.path.exists(itemFilePath) and os.path.isfile(itemFilePath):
         with open(itemFilePath, "r") as itemFile:
             def parseError(lineno, e):
-                print("Could not parse line {} of {} => in item.py: {}".format(lineno, path, e))
+                print("Could not parse line {} of {} => in item.py: {}".format(lineno, itemFilePath, e))
+            pos = (0.0, 0.0)
             for lineno, line in [(k + 1, v.strip()) for k, v in enumerate(itemFile)]:
                 try:
                     if line.startswith("itemName:"):
                         itemName = " ".join(line.split()[1:])
                     elif line.startswith("pos:"):
                         _, x, y = line.split()
-                        x = float(x)
-                        y = float(y)
+                        pos = float(x), float(y)
                     elif line.startswith("spritePath:"):
-                        spritepath = os.path.join(line.split()[1:])    
+                        spritePath = os.path.join(*line.split()[1:])              
                 except Exception as e:
                     parseError(lineno, e)
             item = UnusableItem(pos, itemName, spritePath)
-    return item
-
-def loadUnusableItems(basePath=os.path.join("items", "unusable_items")):
-    items = []
-    for dir in [f for f in os.listdir(basePath) if os.path.isdir(f)]:
-        items.append(getUnusableItem(os.path.join(basePath, dir)))
-    return items
+        return item
 
 def getConsumableItem(dirPath): # TODO: Add effects support
     itemFilePath = os.path.join(dirPath, "item_file")
-    if os.path.exists(itemFilePath) and os.path.isdir(itemFilePath):
+    if os.path.exists(itemFilePath) and os.path.isfile(itemFilePath):
         with open(itemFilePath, "r") as itemFile:
             def parseError(lineno, e):
-                print("Could not parse line {} of {} => in item.py: {}".format(lineno, path, e))
+                print("Could not parse line {} of {} => in item.py: {}".format(lineno, itemFilePath, e))
             ticksPerSprite = 250
             effects = []
             for lineno, line in [(k + 1, v.strip()) for k, v in enumerate(itemFile)]:
@@ -200,7 +219,7 @@ def getConsumableItem(dirPath): # TODO: Add effects support
                         x = float(x)
                         y = float(y)
                     elif line.startswith("spritePath:"):
-                        spritepath = os.path.join(line.split()[1:])
+                        spritePath = os.path.join(line.split()[1:])
                     elif line.startswith("ticksPerSprite:"):
                         _, ticksPerSprite = line.split()
                         ticksPerSprite = float(ticksPerSprite)
@@ -209,20 +228,14 @@ def getConsumableItem(dirPath): # TODO: Add effects support
                     item = ConsumableItem(pos, itemName, spritePath,
                                           ticksPerSprite=ticksPerSprite,
                                           effects=effects)
-    return item
-
-def loadConsumableItems(basePath=os.path.join("items", "usable_items", "consumable_items")):
-    items = []
-    for dir in [f for f in os.listdir(basePath) if os.path.isdir(f)]:
-        items.append(getConsumableItem(os.path.join(basePath, dir)))
-    return items
+        return item
 
 def getApparel(dirPath): # TODO: Add effects support
     itemFilePath = os.path.join(dirPath, "item_file")
-    if os.path.exists(itemFilePath) and os.path.isdir(itemFilePath):
+    if os.path.exists(itemFilePath) and os.path.isfile(itemFilePath):
         with open(itemFilePath, "r") as itemFile:
             def parseError(lineno, e):
-                print("Could not parse line {} of {} => in item.py: {}".format(lineno, path, e))
+                print("Could not parse line {} of {} => in item.py: {}".format(lineno, itemFilePath, e))
             ticksPerSprite = 250
             effects = []
             apparelPositions = []
@@ -235,7 +248,7 @@ def getApparel(dirPath): # TODO: Add effects support
                         x = float(x)
                         y = float(y)
                     elif line.startswith("spritePath:"):
-                        spritepath = os.path.join(line.split()[1:])
+                        spritePath = os.path.join(line.split()[1:])
                     elif line.startswith("ticksPerSprite:"):
                         _, ticksPerSprite = line.split()
                         ticksPerSprite = float(ticksPerSprite)
@@ -248,10 +261,4 @@ def getApparel(dirPath): # TODO: Add effects support
                            effects=effects,
                            equipped=False,
                            apparelPositions=apparelPositions)
-    return item
-
-def loadApparel(basePath=os.path.join("items", "usable_items", "equippable_items", "apparel")):
-    items = []
-    for dir in [f for f in os.listdir(basePath) if os.path.isdir(f)]:
-        items.append(getApparel(os.path.join(basePath, dir)))
-    return items
+        return item

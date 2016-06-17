@@ -77,7 +77,22 @@ class Animate(entity.Entity):
         ##############################################
 
     def moveOrCollide(self, pred_fpos, pred_pos, pred_rect, level):
-        if not any(map(lambda w: pygame.Rect(w).colliderect(pred_rect), level.walls)) and \
-           not any(map(lambda dO: dO[1].colliderect(pred_rect), level.destructibleObjects)) and \
-           not any(map(lambda bO: bO[1].colliderect(pred_rect), level.blockingObjects)):
+        colliding = False
+        for wall in level.walls:
+            if pygame.Rect(wall).colliderect(pred_rect):
+                colliding = True
+                break
+        if not colliding:
+            for bO in level.blockingObjects:
+                if pygame.Rect(bO[1]).colliderect(pred_rect):
+                    colliding = True
+                    break 
+        if not colliding:
+            for indx, dO in enumerate(level.destructibleObjects):
+                if pygame.Rect(dO[1]).colliderect(pred_rect):
+                    # colliding = True
+                    level.destroyDestructibleObject(indx)
+                    break
+
+        if not colliding:
             self.fpos = pred_fpos
