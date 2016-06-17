@@ -119,7 +119,7 @@ def load(filename):
                         textures.getSprite(os.path.join("sprites","misc","nonblocking", filename))
                     ))
             except Exception as e:
-                    parseError(lineno, e)
+                parseError(lineno, e)
     return Level(
         backgroundImage,
         startX, startY,

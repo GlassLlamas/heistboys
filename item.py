@@ -1,27 +1,21 @@
 from enum import Enum, unique
 import random
+import os
 
 import entity
 import textures
 
 class Item(entity.Entity):
-    
-    ID = 0
-    Hash = dict() # itemName -> ID
-    
-    def getID(itemName):
-        if itemName in Item.Hash:
-            return Item.Hash[itemName]
-        Item.ID += 1
-        Item.Hash[itemName] = Item.ID
-        return Item.ID
+
+    unusableItems = []
+    consumableItems = []
+    apparel = []
 
     def __init__(self, pos, itemName, inInventory=False):
         super().__init__(pos)
         self.itemName = itemName
         self.inInventory = inInventory
         self.velocityGenerators = []
-        self.ID = Item.GetID()
     
     @property
     def inInventory(self):
@@ -58,8 +52,8 @@ class Item(entity.Entity):
             ##############################################
 
 class UsableItem(Item):
-    def __init__(self, pos, spritePath, ticksPerSprite):
-        super().__init__(pos)
+    def __init__(self, pos, itemName, spritePath, ticksPerSprite):
+        super().__init__(pos, itemName)
         self.sprites = textures.loadUsableItemSprites(spritePath)
         self.inUse = False
         self.surface = random.choice(self.sprites[self.inUse])
@@ -91,24 +85,24 @@ class UsableItem(Item):
         return None
 
 class UnusableItem(Item):
-    def __init__(self, pos, spritePath):
-        super().__init__(pos)
+    def __init__(self, pos, itemName, spritePath):
+        super().__init__(pos, itemName)
         self.sprites = textures.loadUnusableItemSprites(spritePath)
         self.inUse = False
         self.surface = random.choice(self.sprites[self.inUse])
         self.size = self.surface.get_size()
 
 class ConsumableItem(UsableItem):
-    def __init__(self, pos, spritePath, ticksPerSprite=250, effects):
-        super().__init__(pos, spritePath, ticksPerSprite)
+    def __init__(self, pos, itemName, spritePath, ticksPerSprite=250, effects=[]):
+        super().__init__(pos, itemName, spritePath, ticksPerSprite)
         self.effects = effects
 
     def inUseCallback(self, **kwargs):
         return self.effects
 
 class Equippable(UsableItem):
-    def __init__(self, pos, spritePath, ticksPerSprite, equipped, effects):
-        super().__init__(pos, spritePath, ticksPerSprite)
+    def __init__(self, pos, itemName, spritePath, ticksPerSprite, equipped, effects):
+        super().__init__(pos, itemName, spritePath, ticksPerSprite)
         self.equipped = equipped
         self.effects = effects
 
@@ -123,9 +117,9 @@ class Equippable(UsableItem):
             self.inInventory = True
 
 class Weapon(Equippable):
-    def __init__(self, pos, spritePath, ticksPerSprite=250,
+    def __init__(self, pos, itemName, spritePath, ticksPerSprite=250,
                  equipped=False, effects=[]):
-        super().__init__(pos, spritePath, ticksPerSprite, equipped, effects)
+        super().__init__(pos, itemName, spritePath, ticksPerSprite, equipped, effects)
 
     def attack(self, **kwargs):
         raise NotImplementedError
@@ -143,13 +137,121 @@ class ApparelPosition(Enum):
     boots = 9
 
 class Apparel(Equippable):
-    def __init__(self, pos, spritePath, ticksPerSprite=250,
+    def __init__(self, pos, itemName, spritePath, ticksPerSprite=250,
                  equipped=False, effects=[],
                  apparelPositions=[]):
-        super().__init__(pos, spritePath, ticksPerSprite, equipped, effects)
+        super().__init__(pos, itemName, spritePath, ticksPerSprite, equipped, effects)
         self.apparelPositions = apparelPositions
 
 class ItemStack:
     def __init__(self, item, quantity):
         self.item = item
         self.quantity = quantity
+
+def loadItems():
+    Item.unusableItems = loadUnusableItems()
+    Item.consumableItems = loadConsumableItems()
+    # TODO: Implement melee, ranged weapons
+    #loadMeleeWeapons()
+    #loadRangedWeapons()
+    Item.apparel = loadApparel()
+
+def getUnusableItem(dirPath):
+    itemFilePath = os.path.join(dirPath, "item_file")
+    if os.path.exists(itemFilePath) and os.path.isdir(itemFilePath):
+        with open(itemFilePath, "r") as itemFile:
+            def parseError(lineno, e):
+                print("Could not parse line {} of {} => in item.py: {}".format(lineno, path, e))
+            for lineno, line in [(k + 1, v.strip()) for k, v in enumerate(itemFile)]:
+                try:
+                    if line.startswith("itemName:"):
+                        itemName = " ".join(line.split()[1:])
+                    elif line.startswith("pos:"):
+                        _, x, y = line.split()
+                        x = float(x)
+                        y = float(y)
+                    elif line.startswith("spritePath:"):
+                        spritepath = os.path.join(line.split()[1:])    
+                except Exception as e:
+                    parseError(lineno, e)
+            item = UnusableItem(pos, itemName, spritePath)
+    return item
+
+def loadUnusableItems(basePath=os.path.join("items", "unusable_items")):
+    items = []
+    for dir in [f for f in os.listdir(basePath) if os.path.isdir(f)]:
+        items.append(getUnusableItem(os.path.join(basePath, dir)))
+    return items
+
+def getConsumableItem(dirPath): # TODO: Add effects support
+    itemFilePath = os.path.join(dirPath, "item_file")
+    if os.path.exists(itemFilePath) and os.path.isdir(itemFilePath):
+        with open(itemFilePath, "r") as itemFile:
+            def parseError(lineno, e):
+                print("Could not parse line {} of {} => in item.py: {}".format(lineno, path, e))
+            ticksPerSprite = 250
+            effects = []
+            for lineno, line in [(k + 1, v.strip()) for k, v in enumerate(itemFile)]:
+                try: #  pos, itemName, spritePath, ticksPerSprite=250, effects=[]
+                    if line.startswith("itemName:"):
+                        itemName = " ".join(line.split()[1:])
+                    elif line.startswith("pos:"):
+                        _, x, y = line.split()
+                        x = float(x)
+                        y = float(y)
+                    elif line.startswith("spritePath:"):
+                        spritepath = os.path.join(line.split()[1:])
+                    elif line.startswith("ticksPerSprite:"):
+                        _, ticksPerSprite = line.split()
+                        ticksPerSprite = float(ticksPerSprite)
+                except Exception as e:
+                    parseError(lineno, e)
+                    item = ConsumableItem(pos, itemName, spritePath,
+                                          ticksPerSprite=ticksPerSprite,
+                                          effects=effects)
+    return item
+
+def loadConsumableItems(basePath=os.path.join("items", "usable_items", "consumable_items")):
+    items = []
+    for dir in [f for f in os.listdir(basePath) if os.path.isdir(f)]:
+        items.append(getConsumableItem(os.path.join(basePath, dir)))
+    return items
+
+def getApparel(dirPath): # TODO: Add effects support
+    itemFilePath = os.path.join(dirPath, "item_file")
+    if os.path.exists(itemFilePath) and os.path.isdir(itemFilePath):
+        with open(itemFilePath, "r") as itemFile:
+            def parseError(lineno, e):
+                print("Could not parse line {} of {} => in item.py: {}".format(lineno, path, e))
+            ticksPerSprite = 250
+            effects = []
+            apparelPositions = []
+            for lineno, line in [(k + 1, v.strip()) for k, v in enumerate(itemFile)]:
+                try: #  pos, itemName, spritePath, ticksPerSprite=250, effects=[]
+                    if line.startswith("itemName:"):
+                        itemName = " ".join(line.split()[1:])
+                    elif line.startswith("pos:"):
+                        _, x, y = line.split()
+                        x = float(x)
+                        y = float(y)
+                    elif line.startswith("spritePath:"):
+                        spritepath = os.path.join(line.split()[1:])
+                    elif line.startswith("ticksPerSprite:"):
+                        _, ticksPerSprite = line.split()
+                        ticksPerSprite = float(ticksPerSprite)
+                    elif line.startswith("apparelPositions:"):
+                        apparelPositions = map(int, line.split()[1:])
+                except Exception as e:
+                    parseError(lineno, e)
+            item = Apparel(pos, itemName, spritePath,
+                           ticksPerSprite=ticksPerSprite,
+                           effects=effects,
+                           equipped=False,
+                           apparelPositions=apparelPositions)
+    return item
+
+def loadApparel(basePath=os.path.join("items", "usable_items", "equippable_items", "apparel")):
+    items = []
+    for dir in [f for f in os.listdir(basePath) if os.path.isdir(f)]:
+        items.append(getApparel(os.path.join(basePath, dir)))
+    return items

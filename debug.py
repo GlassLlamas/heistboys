@@ -11,6 +11,7 @@ from buffalo.option import Option
 
 import animate
 import camera
+import item
 import levels
 import player
 
@@ -35,6 +36,7 @@ class Debug(Scene):
     def __init__(self, levelName="basic.lvl"):
         Scene.__init__(self)
         self.BACKGROUND_COLOR = (0, 0, 0, 255)
+        item.loadItems()
         self.level = levels.load(levelName)
         self.player = player.Player(self.level.startPosition)
         self.camera = camera.Camera(locked=self.player)
