@@ -76,7 +76,8 @@ class Level:
                 dropped.pos = tuple(map(float, dO[0]))
                 dropped.randomizeSurface()
                 self.items.append(dropped)
-        self.render() # This is slow af
+        #self.render() # This is slow af
+        self.surface.blit(self.backgroundImage, dO[0], area=dO[1])
 
 def load(filename):
     path = os.path.join(BASE_PATH, filename)
