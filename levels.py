@@ -55,9 +55,9 @@ class Level:
 
     def update(self, cameraPos):
         for a in self.animates:
-            a.update(self)   
+            a.update(self)
         for i in self.items:
-            i.blit(utils.screen, cameraPos)
+            i.update(self)
 
     @property
     def startPosition(self):
