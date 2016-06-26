@@ -1,0 +1,36 @@
+// startPosition <x> <y>
+startPosition: 480 480
+
+// backgroundImage: <filename>
+backgroundImage: todd_test.png
+
+// wall: <x> <y> <w> <h>
+wall: 0 60 1020 10
+wall: 0 1030 1020 10
+wall: 15 0 10 1030
+wall: 985 0 10 1030
+
+// destructibleObject: <filename> <x> <y> [<itemname> <dropchance:(0.0 - 1.0]> ...]
+// in <itemname>, underscores will be replaced with spaces
+// <itemname> must not contain spaces
+destructibleObject: crate.png 675 330  Metal_Scraps 0.75
+destructibleObject: crate.png 675 405  Metal_Scraps 0.75
+destructibleObject: crate.png 675 480  Metal_Scraps 0.75
+destructibleObject: crate.png 600 330  Metal_Scraps 0.75
+destructibleObject: crate.png 600 405  Metal_Scraps 0.75
+destructibleObject: crate.png 600 480  Metal_Scraps 0.75
+destructibleObject: barrel.png 475 330 Metal_Scraps 0.75
+destructibleObject: barrel.png 475 405 Metal_Scraps 0.75
+destructibleObject: barrel.png 400 330 Metal_Scraps 0.75
+destructibleObject: barrel.png 400 405 Metal_Scraps 0.75
+destructibleObject: barrel.png 400 480 Metal_Scraps 0.75
+
+// blockingObject: <filename> <x> <y>
+blockingObject: table.png 665 365
+blockingObject: table.png 100 625
+blockingObject: table.png 185 625
+blockingObject: table.png 100 685
+blockingObject: table.png 185 685
+
+// nonblockingObject: <filename> <x> <y>
+nonblockingObject: horizontal_rug.png 365 635
