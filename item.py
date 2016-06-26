@@ -4,6 +4,9 @@ import os
 
 import pygame
 
+from buffalo import utils
+from buffalo.label import Label
+
 import entity
 import textures
 
@@ -52,7 +55,28 @@ class Item(entity.Entity):
             if not any(map(lambda w: pygame.Rect(w).colliderect(pred_rect), level.walls)):
                 self.fpos = pred_fpos
                 self.pos = int(self.fpos[0]), int(self.fpos[1])
+
+            if pygame.Rect(level.player.pos, level.player.size).colliderect(pred_rect):
+                level.player.pickup(ItemStack(self, 1))
+                self.inInventory = True
+                level.items.remove(self)
             ##############################################
+
+class ItemStack:
+    def __init__(self, item, quantity):
+        self.item = item
+        self.quantity = quantity
+        self.render()
+
+    def render(self):
+        self.surface = utils.empty_surface(self.item.size)
+        self.surface.blit(self.item.surface, (0, 0))
+        if self.item.inInventory:
+            self.quantityLabel = Label((0, 0), str(self.quantity))
+            self.quantityLabel.blit(self.surface)
+
+    def blit(self, dest, pos):
+        dest.blit(self.surface, pos)
 
 class UsableItem(Item):
     def __init__(self, pos, itemName, spritePath, ticksPerSprite):
@@ -148,11 +172,6 @@ class Apparel(Equippable):
                  apparelPositions=[]):
         super().__init__(pos, itemName, spritePath, ticksPerSprite, equipped, effects)
         self.apparelPositions = apparelPositions
-
-class ItemStack:
-    def __init__(self, item, quantity):
-        self.item = item
-        self.quantity = quantity
 
 def loadItems():
     loadArbitraryItems(

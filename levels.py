@@ -7,6 +7,7 @@ import pygame
 from buffalo import utils
 
 import item
+import player
 import textures
 
 BASE_PATH = os.path.join("levels")
@@ -20,6 +21,7 @@ class Level:
                  destructibleObjects=[],
                  blockingObjects=[],
                  nonblockingObjects=[],
+                 associatedPlayer=None,
              ):
         if backgroundImage is None:
             print("No background image specified.")
@@ -33,6 +35,9 @@ class Level:
         self.nonblockingObjects = nonblockingObjects
         self.animates = []
         self.items = []
+        if associatedPlayer is None:
+            associatedPlayer = player.Player(self.startPosition)
+        self.player = associatedPlayer
         self.render()
 
     def blit(self, dest, offset=(0,0)):
@@ -41,6 +46,7 @@ class Level:
             a.blit(utils.screen, offset)
         for i in self.items:
             i.blit(utils.screen, offset)
+        self.player.blit(dest, offset)
 
     def render(self):
         if not hasattr(self, "surface"):
@@ -53,7 +59,8 @@ class Level:
         for (pos, rect, surface) in self.blockingObjects:
             self.surface.blit(surface, pos)
 
-    def update(self, cameraPos):
+    def update(self, cameraPos, keys):
+        self.player.update(keys, self)
         for a in self.animates:
             a.update(self)
         for i in self.items:
@@ -77,7 +84,10 @@ class Level:
                 dropped.randomizeSurface()
                 self.items.append(dropped)
         #self.render() # This is slow af
-        self.surface.blit(self.backgroundImage, dO[0], area=dO[1])
+        self.redraw(dO[0], dO[1])
+
+    def redraw(self, pos, rect):
+        self.surface.blit(self.backgroundImage, pos, area=rect)
 
 def load(filename):
     path = os.path.join(BASE_PATH, filename)
